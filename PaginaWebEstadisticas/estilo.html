@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>TP2 – Tablas de Frecuencia y Estadísticos</title>
+
+  <!-- Bootstrap 5 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css"/>
+
+  <!-- Nuestros estilos -->
+  <link rel="stylesheet" href="estilos.css"/>
+</head>
+<body>
+
+  <!-- ENCABEZADO -->
+  <header>
+    <h1>Tablas de Frecuencia y Estadísticos</h1>
+    <p>Estadística y Probabilidades · TP Nro 2 · 2026</p>
+  </header>
+
+  <!-- CONTENIDO PRINCIPAL -->
+  <main>
+
+    <!-- Barra de estado de la API -->
+    <div id="estado-api">
+      <span id="estado-texto">Conectando con la API...</span>
+    </div>
+
+    <!-- Pestañas (TAB) -->
+    <ul class="nav nav-tabs" id="pestanas">
+      <li class="nav-item">
+        <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#pestaña-poblacion">
+          Población completa
+        </button>
+      </li>
+      <li class="nav-item">
+        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#pestaña-frecuencias">
+          Tablas de Frecuencia
+        </button>
+      </li>
+      <li class="nav-item">
+        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#pestaña-estadisticos">
+          Estadísticos
+        </button>
+      </li>
+    </ul>
+
+    <!-- Contenido de las pestañas -->
+    <div class="tab-content">
+
+      <!-- PESTAÑA 1: Población completa -->
+      <div class="tab-pane fade show active" id="pestaña-poblacion">
+        <h2>Población completa <span id="total-registros"></span></h2>
+        <div id="tabla-poblacion">Cargando...</div>
+      </div>
+
+      <!-- PESTAÑA 2: Tablas de Frecuencia -->
+      <div class="tab-pane fade" id="pestaña-frecuencias">
+
+        <h2>Niveles educativos</h2>
+        <div id="tabla-niveles">Cargando...</div>
+
+        <h2>Cursos del nivel secundario</h2>
+        <div id="tabla-cursos">Cargando...</div>
+
+      </div>
+
+      <!-- PESTAÑA 3: Estadísticos -->
+      <div class="tab-pane fade" id="pestaña-estadisticos">
+        <h2>Estadísticos de la variable Edad</h2>
+        <div id="tabla-estadisticos">Cargando...</div>
+      </div>
+
+    </div>
+    <!-- fin tab-content -->
+
+  </main>
+
+  <!-- Bootstrap 5 JS -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+
+  <!-- Nuestro script -->
+  <script src="script.js"></script>
+
+</body>
+</html>
