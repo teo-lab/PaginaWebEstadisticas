@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TP2 - Estadistica y Probabilidades</title>
+
+  <!-- Bootstrap CSS (framework de diseño) -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Nuestro CSS personalizado -->
+  <link rel="stylesheet" href="Css.css">
+</head>
+<body>
+
+  <div class="contenedor">
+
+    <h1>Estadistica y Probabilidades</h1>
+    <p class="subtitulo">Trabajo Practico Nro 2 — Tablas de Frecuencia y Estadisticas</p>
+
+    <!-- =============================================
+         PESTAÑAS (componente TAB de Bootstrap)
+         ============================================= -->
+    <ul class="nav nav-tabs" id="misPestanas">
+      <li class="nav-item">
+        <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#poblacion">
+          Poblacion completa
+        </button>
+      </li>
+      <li class="nav-item">
+        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#frecuencias">
+          Tablas de Frecuencia
+        </button>
+      </li>
+      <li class="nav-item">
+        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#estadisticas">
+          Estadisticas
+        </button>
+      </li>
+    </ul>
+
+    <!-- Contenido de las pestañas -->
+    <div class="tab-content">
+
+      <!-- =========================================
+           PESTAÑA 1: POBLACIÓN COMPLETA
+           ========================================= -->
+      <div class="tab-pane fade show active" id="poblacion">
+
+        <h2>Poblacion completa</h2>
+
+        <p class="mensaje" id="msgCargando">Cargando datos...</p>
+
+        <table id="tablaPoblacion" style="display:none;">
+          <thead>
+            <tr>
+              <th>Nombre y Apellido</th>
+              <th>Edad</th>
+              <th>Curso</th>
+              <th>Nivel Educativo</th>
+            </tr>
+          </thead>
+          <tbody id="cuerpoTablaPoblacion">
+          </tbody>
+        </table>
+
+      </div>
+
+      <!-- =========================================
+           PESTAÑA 2: TABLAS DE FRECUENCIA
+           ========================================= -->
+      <div class="tab-pane fade" id="frecuencias">
+
+        <h2>Niveles Educativos</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Nivel</th>
+              <th>Frec. Absoluta</th>
+              <th>Frec. Acumulada</th>
+              <th>Frec. Relativa</th>
+            </tr>
+          </thead>
+          <tbody id="cuerpoTablaFrecNivel">
+          </tbody>
+        </table>
+
+        <h2>Cursos del Nivel Secundario</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Curso</th>
+              <th>Frec. Absoluta</th>
+              <th>Frec. Acumulada</th>
+              <th>Frec. Relativa</th>
+            </tr>
+          </thead>
+          <tbody id="cuerpoTablaFrecCurso">
+          </tbody>
+        </table>
+
+      </div>
+
+      <!-- =========================================
+           PESTAÑA 3: ESTADÍSTICOS
+           ========================================= -->
+      <div class="tab-pane fade" id="estadisticas">
+
+        <h2>Estadisticas sobre la variable Edad</h2>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Estadistica</th>
+              <th>Valor</th>
+            </tr>
+          </thead>
+          <tbody id="cuerpoTablaEstadisticas">
+          </tbody>
+        </table>
+
+      </div>
+
+    </div><!-- fin tab-content -->
+  </div><!-- fin contenedor -->
+
+
+  <!-- Bootstrap JS (necesario para que funcionen las pestañas) -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+  <!-- =============================================
+       JAVASCRIPT
+       ============================================= -->
+  <script>
+
+    const URL_API = "https://apidemo.geoeducacion.com.ar/api/testing/encuesta/1";
+
+    let datos = [];
+
+    async function cargarDatos() {
+      try {
+        const respuesta = await fetch(URL_API);
+        const json = await respuesta.json();
+
+        if (json.success) {
+          datos = json.data;
+          mostrarPoblacion();
+          mostrarFrecuencias();
+          mostrarEstadisticas();
+        } else {
+          mostrarError("La API devolvio un error.");
+        }
+
+      } catch (error) {
+        mostrarError("No se pudo conectar con la API.");
+      }
+    }
+
+    function mostrarPoblacion() {
+      const tbody = document.getElementById("cuerpoTablaPoblacion");
+
+      datos.forEach(persona => {
+        const fila = document.createElement("tr");
+        fila.innerHTML = `
+          <td>${persona.nombre} ${persona.apellido}</td>
+          <td>${persona.Edad}</td>
+          <td>${persona.curso}</td>
+          <td>${persona.nivel}</td>
+        `;
+        tbody.appendChild(fila);
+      });
+
+      document.getElementById("msgCargando").style.display = "none";
+      document.getElementById("tablaPoblacion").style.display = "table";
+    }
+
+    function contarFrecuencias(array) {
+      const conteo = {};
+      array.forEach(item => {
+        conteo[item] = (conteo[item] || 0) + 1;
+      });
+      return conteo;
+    }
+
+    function llenarTablaFrecuencia(idTbody, conteo, total) {
+      const tbody = document.getElementById(idTbody);
+      let acumulada = 0;
+
+      Object.entries(conteo).forEach(([clave, frecAbs]) => {
+        acumulada += frecAbs;
+        const frecRel = ((frecAbs / total) * 100).toFixed(1) + "%";
+
+        const fila = document.createElement("tr");
+        fila.innerHTML = `
+          <td>${clave}</td>
+          <td>${frecAbs}</td>
+          <td>${acumulada}</td>
+          <td>${frecRel}</td>
+        `;
+        tbody.appendChild(fila);
+      });
+    }
+
+    function mostrarFrecuencias() {
+      const total = datos.length;
+
+      const niveles = datos.map(p => p.nivel);
+      const conteoNiveles = contarFrecuencias(niveles);
+      llenarTablaFrecuencia("cuerpoTablaFrecNivel", conteoNiveles, total);
+
+      const soloSecundario = datos.filter(p => p.nivel === "Secundario");
+      const totalSecundario = soloSecundario.length;
+      const cursos = soloSecundario.map(p => p.curso);
+      const conteoCursos = contarFrecuencias(cursos);
+      llenarTablaFrecuencia("cuerpoTablaFrecCurso", conteoCursos, totalSecundario);
+    }
+
+    function calcularMedia(array) {
+      const suma = array.reduce((acc, val) => acc + val, 0);
+      return (suma / array.length).toFixed(2);
+    }
+
+    function calcularMediana(array) {
+      const ordenado = [...array].sort((a, b) => a - b);
+      const mitad = Math.floor(ordenado.length / 2);
+      if (ordenado.length % 2 === 0) {
+        return ((ordenado[mitad - 1] + ordenado[mitad]) / 2).toFixed(2);
+      } else {
+        return ordenado[mitad].toFixed(2);
+      }
+    }
+
+    function calcularCuartil(array, q) {
+      const ordenado = [...array].sort((a, b) => a - b);
+      const pos = q * (ordenado.length - 1);
+      const inferior = Math.floor(pos);
+      const superior = Math.ceil(pos);
+      if (inferior === superior) return ordenado[inferior].toFixed(2);
+      const fraccion = pos - inferior;
+      return (ordenado[inferior] + fraccion * (ordenado[superior] - ordenado[inferior])).toFixed(2);
+    }
+
+    function calcularDesvio(array, media) {
+      const varianza = array.reduce((acc, val) => acc + Math.pow(val - media, 2), 0) / array.length;
+      return Math.sqrt(varianza).toFixed(2);
+    }
+
+    function mostrarEstadisticas() {
+      const edades = datos.map(p => p.Edad);
+      const media = parseFloat(calcularMedia(edades));
+
+      const estadisticas = [
+        { nombre: "Media",                   valor: media.toFixed(2) },
+        { nombre: "Mediana",                 valor: calcularMediana(edades) },
+        { nombre: "Valor Maximo",            valor: Math.max(...edades) },
+        { nombre: "Valor Minimo",            valor: Math.min(...edades) },
+        { nombre: "Primer Cuartil (Q1)",     valor: calcularCuartil(edades, 0.25) },
+        { nombre: "Segundo Cuartil (Q2)",    valor: calcularCuartil(edades, 0.50) },
+        { nombre: "Desvio Estandar",         valor: calcularDesvio(edades, media) }
+      ];
+
+      const tbody = document.getElementById("cuerpoTablaEstadisticas");
+
+      estadisticas.forEach(item => {
+        const fila = document.createElement("tr");
+        fila.innerHTML = `<td>${item.nombre}</td><td>${item.valor}</td>`;
+        tbody.appendChild(fila);
+      });
+    }
+
+    function mostrarError(mensaje) {
+      document.getElementById("msgCargando").textContent = "Error: " + mensaje;
+    }
+
+    cargarDatos();
+
+  </script>
+
+</body>
+</html>
